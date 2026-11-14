@@ -1,0 +1,15 @@
+unit: legacy-public-page
+bindings:
+  - type: convention
+    name: "Inline React application bootstrapped by Babel Standalone"
+    source_loc: "public/index.html:82"
+    target: "ReactApp"
+    must_appear_in_target: true
+    notes: "Loads React, ReactDOM, and Babel from unpkg CDN URLs and transpiles inline JSX in the browser."
+runtime_config:
+  - key: "Sensor API path"
+    source_loc: "public/index.html:108"
+    source: code
+    default_value: "/api/sensors"
+    must_appear_in_target: true
+    notes: "Relative URL; the page does not open a WebSocket."

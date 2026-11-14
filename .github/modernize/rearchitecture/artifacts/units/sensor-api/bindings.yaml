@@ -1,0 +1,27 @@
+unit: sensor-api
+bindings:
+  - type: route-declaration
+    name: "POST /api/sensors"
+    source_loc: "server/index.js:44"
+    target: "Sensor telemetry ingestion handler"
+    must_appear_in_target: true
+    notes: "Accepts a JSON body and returns { success: true }."
+  - type: route-declaration
+    name: "GET /api/sensors"
+    source_loc: "server/index.js:62"
+    target: "Sensor snapshot reader"
+    must_appear_in_target: true
+    notes: "Returns { data: sensorState, rainHistory }."
+  - type: convention
+    name: "WebSocketServer attached to HTTP server"
+    source_loc: "server/index.js:13"
+    target: "WebSocket connection and broadcast handlers"
+    must_appear_in_target: true
+    notes: "New clients receive the current snapshot; sensor POSTs and periodic heartbeats are broadcast."
+runtime_config:
+  - key: "PORT"
+    source_loc: "server/index.js:71"
+    source: env
+    default_value: "3000"
+    must_appear_in_target: true
+    notes: "HTTP and WebSocket server listen on the same port."

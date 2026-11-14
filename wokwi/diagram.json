@@ -1,0 +1,98 @@
+{
+  "version": 1,
+  "author": "SmartPlant EcoVerse EVS Project",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-esp32-devkit-v1", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    {
+      "type": "wokwi-dht11",
+      "id": "dht1",
+      "top": -160,
+      "left": -180,
+      "attrs": { "temperature": "25", "humidity": "60" }
+    },
+    {
+      "type": "wokwi-potentiometer",
+      "id": "pot_soil",
+      "top": 120,
+      "left": -180,
+      "attrs": { "label": "Soil Moisture (YL-69)" }
+    },
+    {
+      "type": "wokwi-photoresistor-sensor",
+      "id": "ldr1",
+      "top": 280,
+      "left": -180,
+      "attrs": { "lux": "650" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_rain",
+      "top": -160,
+      "left": 180,
+      "attrs": { "color": "blue", "label": "Rain Sensor (FC-37)" }
+    },
+    {
+      "type": "wokwi-buzzer",
+      "id": "buzzer1",
+      "top": -30,
+      "left": 200,
+      "attrs": { "volume": "0.5" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led_rain",
+      "top": -80,
+      "left": 150,
+      "attrs": { "color": "red", "label": "Rain Red Alert LED" }
+    },
+    {
+      "type": "wokwi-relay-module",
+      "id": "relay1",
+      "top": 140,
+      "left": 180,
+      "attrs": { "label": "5V Water Pump Relay" }
+    },
+    {
+      "type": "wokwi-lcd1602",
+      "id": "lcd1",
+      "top": -260,
+      "left": -60,
+      "attrs": { "pins": "i2c" }
+    }
+  ],
+  "connections": [
+    [ "esp:TX0", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX0", "$serialMonitor:TX", "", [] ],
+
+    [ "dht1:VCC", "esp:3V3", "red", [ "v0" ] ],
+    [ "dht1:GND", "esp:GND.1", "black", [ "v0" ] ],
+    [ "dht1:SDA", "esp:D15", "green", [ "v0" ] ],
+
+    [ "pot_soil:VCC", "esp:3V3", "red", [ "v0" ] ],
+    [ "pot_soil:GND", "esp:GND.1", "black", [ "v0" ] ],
+    [ "pot_soil:SIG", "esp:D34", "blue", [ "v0" ] ],
+
+    [ "ldr1:VCC", "esp:3V3", "red", [ "v0" ] ],
+    [ "ldr1:GND", "esp:GND.1", "black", [ "v0" ] ],
+    [ "ldr1:AO", "esp:D35", "orange", [ "v0" ] ],
+
+    [ "btn_rain:1.A", "esp:D14", "purple", [ "v0" ] ],
+    [ "btn_rain:2.A", "esp:GND.2", "black", [ "v0" ] ],
+
+    [ "buzzer1:1", "esp:D27", "red", [ "v0" ] ],
+    [ "buzzer1:2", "esp:GND.2", "black", [ "v0" ] ],
+
+    [ "led_rain:A", "esp:D12", "red", [ "v0" ] ],
+    [ "led_rain:C", "esp:GND.2", "black", [ "v0" ] ],
+
+    [ "relay1:VCC", "esp:5V", "red", [ "v0" ] ],
+    [ "relay1:GND", "esp:GND.2", "black", [ "v0" ] ],
+    [ "relay1:IN", "esp:D26", "cyan", [ "v0" ] ],
+
+    [ "lcd1:VCC", "esp:5V", "red", [ "v0" ] ],
+    [ "lcd1:GND", "esp:GND.2", "black", [ "v0" ] ],
+    [ "lcd1:SDA", "esp:D21", "blue", [ "v0" ] ],
+    [ "lcd1:SCL", "esp:D22", "yellow", [ "v0" ] ]
+  ]
+}

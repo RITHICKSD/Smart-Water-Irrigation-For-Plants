@@ -1,0 +1,11 @@
+unit: esp32-firmware
+commit: false
+candidate_splits:
+  - id: "wokwi/sketch.ino:90-193"
+    drivers: [concern_split, execution_model_split]
+    rationale: >
+      The loop combines sensor acquisition, rain and irrigation policy, LCD/serial output,
+      and network delivery; these concerns have different hardware and transport failure paths.
+    source_slice:
+      file: wokwi/sketch.ino
+      lines: [90, 193]

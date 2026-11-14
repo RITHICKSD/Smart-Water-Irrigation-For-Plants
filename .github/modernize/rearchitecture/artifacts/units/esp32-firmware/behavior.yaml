@@ -1,0 +1,50 @@
+unit: esp32-firmware
+side_effects:
+  - source_loc: "wokwi/sketch.ino:60"
+    effect: "Initializes relay, alert LED, buzzer, DHT sensor, I2C LCD, and Wi-Fi."
+    must_preserve: true
+  - source_loc: "wokwi/sketch.ino:90"
+    effect: "Samples temperature, humidity, soil moisture, light, and rain input once per loop."
+    must_preserve: true
+  - source_loc: "wokwi/sketch.ino:118"
+    effect: "Rain detection turns on the warning LED and forces the pump relay off."
+    must_preserve: true
+  - source_loc: "wokwi/sketch.ino:138"
+    effect: "Sounds the buzzer for rain detection or when soil moisture is at least 100%, temperature is below 15 C, and humidity is above 80%."
+    must_preserve: true
+  - source_loc: "wokwi/sketch.ino:129"
+    effect: "When dry and in auto mode, energizes the relay to run the pump; otherwise keeps it off."
+    must_preserve: true
+  - source_loc: "wokwi/sketch.ino:184"
+    effect: "Posts sensor telemetry to the configured endpoint when Wi-Fi is connected."
+    must_preserve: true
+branches:
+  - source_loc: "wokwi/sketch.ino:99"
+    condition: "DHT temperature or humidity read is NaN"
+    behavior: "Substitute 25 C for temperature and 60% for humidity."
+    must_preserve: true
+  - source_loc: "wokwi/sketch.ino:113"
+    condition: "Soil moisture is at least 100%, temperature is below 15 C, and humidity is above 80%."
+    behavior: "Set the environmental alert and sound the buzzer."
+    must_preserve: true
+  - source_loc: "wokwi/sketch.ino:112"
+    condition: "Rain button is pressed, or soil moisture is above 90% while temperature is below 20 C"
+    behavior: "Mark rain detected and lock irrigation."
+    must_preserve: true
+  - source_loc: "wokwi/sketch.ino:129"
+    condition: "Auto mode is enabled and soil moisture is below the fixed 50% threshold"
+    behavior: "Turn pump relay on unless rain has been detected."
+    must_preserve: true
+  - source_loc: "wokwi/sketch.ino:166"
+    condition: "Wi-Fi is disconnected"
+    behavior: "Skip the HTTP telemetry POST and continue the loop."
+    must_preserve: true
+error_paths:
+  - source_loc: "wokwi/sketch.ino:199"
+    trigger: "HTTP request fails or returns a non-success status."
+    outcome: "Write an error or unexpected status to Serial; continue after the loop delay."
+    contract: "No retry policy beyond redirect handling is defined."
+    must_preserve: true
+concurrency:
+  model: sync
+  tx_boundary: null

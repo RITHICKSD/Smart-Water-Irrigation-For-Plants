@@ -1,0 +1,21 @@
+unit: dashboard-page
+bindings:
+  - type: convention
+    name: "React root mount"
+    source_loc: "src/main.jsx:6"
+    target: "App"
+    must_appear_in_target: true
+    notes: "index.html provides the root element and loads src/main.jsx as a module."
+runtime_config:
+  - key: "Sensor API HTTP URL"
+    source_loc: "src/App.jsx:123"
+    source: code
+    default_value: "http://localhost:3000/api/sensors; falls back to relative /api/sensors only when fetch throws"
+    must_appear_in_target: true
+    notes: "The absolute URL is tied to localhost; a non-throwing HTTP error does not enter the relative fallback."
+  - key: "Sensor WebSocket URL"
+    source_loc: "src/App.jsx:163"
+    source: code
+    default_value: "Current page protocol and hostname, fixed port 3000"
+    must_appear_in_target: true
+    notes: "Uses ws or wss based on page protocol."

@@ -1,0 +1,36 @@
+unit: sensor-api
+side_effects:
+  - source_loc: "server/index.js:44"
+    effect: "POST updates defined sensor fields in the in-memory snapshot and refreshes its timestamp."
+    must_preserve: true
+  - source_loc: "server/index.js:54"
+    effect: "Appends the current rain flag to rainHistory and retains only the latest 10 entries."
+    must_preserve: true
+  - source_loc: "server/index.js:57"
+    effect: "Broadcasts a sensor_update message to connected WebSocket clients after POST."
+    must_preserve: true
+  - source_loc: "server/index.js:69"
+    effect: "Broadcasts a heartbeat message every 5 seconds."
+    must_preserve: true
+branches:
+  - source_loc: "server/index.js:33"
+    condition: "The server has started but has not received a sensor POST"
+    behavior: "Keep timestamp at 0 so clients do not identify the initial placeholder values as live telemetry."
+    must_preserve: true
+  - source_loc: "server/index.js:46"
+    condition: "A sensor field is present in the POST body"
+    behavior: "Update that field; omitted fields retain their previous value."
+    must_preserve: true
+  - source_loc: "server/index.js:64"
+    condition: "A WebSocket client connects"
+    behavior: "Send the current sensor_update snapshot immediately."
+    must_preserve: true
+error_paths:
+  - source_loc: "server/index.js:16"
+    trigger: "Request JSON is malformed."
+    outcome: "Express JSON middleware handles the parse failure; the application defines no custom error body."
+    contract: "No application-specific error contract."
+    must_preserve: true
+concurrency:
+  model: event-loop
+  tx_boundary: null

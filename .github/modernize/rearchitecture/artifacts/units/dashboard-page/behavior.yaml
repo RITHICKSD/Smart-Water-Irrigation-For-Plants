@@ -1,0 +1,49 @@
+unit: dashboard-page
+side_effects:
+  - source_loc: "src/App.jsx:157"
+    effect: "Polls the sensor API every 800 ms and also opens a WebSocket for pushed updates."
+    must_preserve: true
+  - source_loc: "src/App.jsx:88"
+    effect: "While the dashboard's simulated pump runs, increases displayed soil moisture in 3-point steps, capped at the selected target (60% by default), and decreases the local water-level estimate."
+    must_preserve: true
+  - source_loc: "src/App.jsx:222"
+    effect: "Appends a timestamped display sample every 3 seconds and retains the most recent 20 samples for the live chart."
+    must_preserve: true
+branches:
+  - source_loc: "src/App.jsx:242"
+    condition: "showLanding is true"
+    behavior: "Render the landing screen; its launch button switches to the dashboard."
+    must_preserve: true
+  - source_loc: "src/App.jsx:195"
+    condition: "Automatic mode is enabled, live soil moisture is below 40%, rain is not detected, water level is above 5%, and this low-moisture cycle has not already been handled."
+    behavior: "Start the simulated pump once and increase displayed moisture toward the selected target, capped at 60%."
+    must_preserve: true
+  - source_loc: "src/App.jsx:108"
+    condition: "A fresh live soil-moisture reading reaches at least 40% after the simulated pump is inactive."
+    behavior: "Clear the simulated moisture override and allow a later low-moisture cycle to trigger again."
+    must_preserve: true
+  - source_loc: "src/App.jsx:129"
+    condition: "Sensor timestamp is less than 15 seconds old"
+    behavior: "Accept the sensor snapshot into dashboard state; stale snapshots are not applied."
+    must_preserve: true
+  - source_loc: "src/App.jsx:206"
+    condition: "Rain is detected"
+    behavior: "Stop the simulated pump and clear its temporary moisture display."
+    must_preserve: true
+  - source_loc: "src/App.jsx:271"
+    condition: "Displayed soil moisture is below 40% and rain is not detected"
+    behavior: "Show the low-moisture warning."
+    must_preserve: true
+  - source_loc: "src/components/SensorCards.jsx:6"
+    condition: "A recent ESP32 telemetry update has been received"
+    behavior: "Label temperature and humidity as live readings; otherwise indicate that the dashboard is waiting for Wokwi sensor data."
+    must_preserve: true
+error_paths:
+  - source_loc: "src/App.jsx:136"
+    trigger: "The absolute sensor fetch fails, then the relative fallback also fails, or the WebSocket cannot connect."
+    outcome: "Errors are swallowed; default/local sensor values remain and the connection indicator may remain in simulated mode."
+    contract: "No explicit user-facing error or retry message is emitted."
+    must_preserve: true
+concurrency:
+  model: event-loop
+  tx_boundary: null

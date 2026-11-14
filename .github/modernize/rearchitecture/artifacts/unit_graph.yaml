@@ -1,0 +1,78 @@
+units:
+  - name: dashboard-page
+    trigger: page
+    trigger_detail: "SPA root page at /; landing screen transitions to the live dashboard"
+    source_anchors:
+      - path: index.html
+        line: 18
+      - path: src/main.jsx
+        line: 6
+      - path: src/App.jsx
+        line: 15
+      - path: src/index.css
+        line: 1
+      - path: src/components/LandingPage.jsx
+        line: 4
+      - path: src/components/Navbar.jsx
+        line: 4
+      - path: src/components/PlantVisualizerCanvas.jsx
+        line: 4
+      - path: src/components/SensorCards.jsx
+        line: 4
+      - path: src/components/SmartControls.jsx
+        line: 4
+      - path: src/components/AnalyticsCharts.jsx
+        line: 4
+      - path: src/components/WaterConservationCalc.jsx
+        line: 4
+      - path: src/components/EVSProjectReport.jsx
+        line: 4
+      - path: src/components/PlantSelectorModal.jsx
+        line: 5
+      - path: src/data/plants.js
+        line: 1
+    exported_signature: []
+    dynamic_entrypoints: []
+    depends_on:
+      - unit: sensor-api
+        via: "GET /api/sensors and WebSocket sensor_update messages"
+    shared_refs: []
+
+  - name: legacy-public-page
+    trigger: page
+    trigger_detail: "Fallback GET / page served from public/index.html when dist does not provide the page"
+    source_anchors:
+      - path: public/index.html
+        line: 82
+    exported_signature: []
+    dynamic_entrypoints: []
+    depends_on:
+      - unit: sensor-api
+        via: "GET /api/sensors polling"
+    shared_refs: []
+
+  - name: sensor-api
+    trigger: api
+    trigger_detail: "GET and POST /api/sensors plus WebSocket connections on the HTTP server"
+    source_anchors:
+      - path: server/index.js
+        line: 44
+    exported_signature: []
+    dynamic_entrypoints: []
+    depends_on: []
+    shared_refs: []
+
+  - name: esp32-firmware
+    trigger: handler
+    trigger_detail: "ESP32 setup()/loop() sensor sampling and irrigation cycle"
+    source_anchors:
+      - path: wokwi/sketch.ino
+        line: 51
+      - path: wokwi/diagram.json
+        line: 1
+    exported_signature: []
+    dynamic_entrypoints: []
+    depends_on:
+      - unit: sensor-api
+        via: "POST /api/sensors telemetry payload"
+    shared_refs: []

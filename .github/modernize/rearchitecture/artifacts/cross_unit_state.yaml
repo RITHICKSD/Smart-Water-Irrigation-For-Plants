@@ -1,0 +1,30 @@
+flows:
+  - name: server sensor snapshot to React dashboard
+    medium: static
+    key: sensorState
+    writer:
+      unit: sensor-api
+      source_loc: "server/index.js:26"
+    reader:
+      unit: dashboard-page
+      source_loc: "src/App.jsx:49"
+    pairing: matched
+    must_preserve: true
+    must_confirm: null
+    verification_hint: "POST a sensor update and confirm GET/WebSocket data reaches the React dashboard."
+    notes: "The Express process stores one mutable in-memory snapshot; the dashboard reads it through HTTP polling and WebSocket messages."
+
+  - name: server sensor snapshot to fallback page
+    medium: static
+    key: sensorState
+    writer:
+      unit: sensor-api
+      source_loc: "server/index.js:26"
+    reader:
+      unit: legacy-public-page
+      source_loc: "public/index.html:108"
+    pairing: matched
+    must_preserve: true
+    must_confirm: null
+    verification_hint: "POST a sensor update and confirm the fallback page reflects it through its polling loop."
+    notes: "The fallback page independently polls the same in-memory server snapshot."

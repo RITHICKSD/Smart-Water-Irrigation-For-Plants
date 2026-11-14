@@ -1,0 +1,33 @@
+unit: esp32-firmware
+bindings:
+  - type: convention
+    name: "Arduino setup()/loop() lifecycle"
+    source_loc: "wokwi/sketch.ino:51"
+    target: "ESP32 initialization and recurring sensor/control cycle"
+    must_appear_in_target: true
+    notes: "setup() blocks until Wi-Fi connects; loop() samples, controls outputs, updates LCD, and sends telemetry."
+  - type: convention
+    name: "Sensor and actuator pin assignments"
+    source_loc: "wokwi/sketch.ino:27"
+    target: "DHT11 on GPIO 15, soil ADC 34, light ADC 35, rain input 14, pump relay 26, alert LED 12, buzzer 27, LCD I2C 21/22"
+    must_appear_in_target: true
+    notes: "The sketch DHT type now matches the DHT11 part declared in wokwi/diagram.json."
+runtime_config:
+  - key: "Wi-Fi SSID/password"
+    source_loc: "wokwi/sketch.ino:37"
+    source: code
+    default_value: "Wokwi-GUEST / empty password"
+    must_appear_in_target: true
+    notes: "Simulator-specific credentials are embedded in the sketch."
+  - key: "Telemetry endpoint"
+    source_loc: "wokwi/sketch.ino:41"
+    source: code
+    default_value: "Current LocalTunnel HTTPS URL ending in /api/sensors"
+    must_appear_in_target: true
+    notes: "Public tunnel URL is hard-coded."
+  - key: "Target soil moisture threshold"
+    source_loc: "wokwi/sketch.ino:48"
+    source: code
+    default_value: "50%"
+    must_appear_in_target: true
+    notes: "Firmware threshold is independent of dashboard control state."

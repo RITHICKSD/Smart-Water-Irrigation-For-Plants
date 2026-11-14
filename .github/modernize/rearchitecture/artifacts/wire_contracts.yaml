@@ -1,0 +1,51 @@
+contracts:
+  - name: sensor telemetry ingestion
+    unit: sensor-api
+    type: rest
+    stability: must_preserve
+    source_loc: "server/index.js:44"
+    contract:
+      method: "POST"
+      path: "/api/sensors"
+      request: "{ soilMoisture?, temperature?, humidity?, light?, rainDetected?, plant? } JSON; ESP32 sends the first five fields"
+      response: "{ success: true }"
+      error: "No application-specific validation or error response is defined."
+      auth: "None"
+    target_contract:
+      method: "POST /api/sensors"
+      notes: "Preserve the current optional fields and success response shape; no target stack was specified."
+    semantic_divergence: []
+
+  - name: sensor snapshot read
+    unit: sensor-api
+    type: rest
+    stability: must_preserve
+    source_loc: "server/index.js:62"
+    contract:
+      method: "GET"
+      path: "/api/sensors"
+      request: "No request body"
+      response: "{ data: sensorState, rainHistory: boolean[] }"
+      error: "No application-specific error response is defined."
+      auth: "None"
+    target_contract:
+      method: "GET /api/sensors"
+      notes: "Preserve the current response envelope and field names; no target stack was specified."
+    semantic_divergence: []
+
+  - name: live sensor WebSocket stream
+    unit: sensor-api
+    type: sdk
+    stability: must_preserve
+    source_loc: "server/index.js:64"
+    contract:
+      method: "HTTP Upgrade to WebSocket"
+      path: "/"
+      request: "WebSocket connection to the HTTP server"
+      response: "Initial and telemetry frames: { type: 'sensor_update', data: sensorState, rainHistory }; periodic heartbeat frames use type 'heartbeat'."
+      error: "No application-specific authentication or error frame is defined."
+      auth: "None"
+    target_contract:
+      method: "WebSocket /"
+      notes: "Preserve frame type names and payload fields; no target stack was specified."
+    semantic_divergence: []

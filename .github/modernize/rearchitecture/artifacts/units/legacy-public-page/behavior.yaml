@@ -1,0 +1,26 @@
+unit: legacy-public-page
+side_effects:
+  - source_loc: "public/index.html:122"
+    effect: "Polls GET /api/sensors every 800 ms and applies returned telemetry fields."
+    must_preserve: true
+  - source_loc: "public/index.html:203"
+    effect: "A local pump simulation increments displayed soil moisture and decrements displayed water level."
+    must_preserve: true
+branches:
+  - source_loc: "public/index.html:127"
+    condition: "Automatic mode is enabled, rain is not detected, and soil moisture is below the selected plant minimum."
+    behavior: "Trigger the local pump simulation."
+    must_preserve: true
+  - source_loc: "public/index.html:201"
+    condition: "Rain is detected or local pump is already active"
+    behavior: "Ignore a pump request."
+    must_preserve: true
+error_paths:
+  - source_loc: "public/index.html:106"
+    trigger: "GET /api/sensors fails."
+    outcome: "The polling error is swallowed and the local/default page state remains visible."
+    contract: "No explicit user-facing error is emitted."
+    must_preserve: true
+concurrency:
+  model: event-loop
+  tx_boundary: null

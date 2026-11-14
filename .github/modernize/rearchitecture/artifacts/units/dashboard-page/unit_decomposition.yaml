@@ -1,0 +1,19 @@
+unit: dashboard-page
+commit: false
+candidate_splits:
+  - id: "src/App.jsx:120-187"
+    drivers: [concern_split, reuse_split]
+    rationale: >
+      The root page owns HTTP polling, WebSocket lifecycle, freshness filtering, and connection
+      status alongside presentation state; these are a distinct telemetry-integration concern.
+    source_slice:
+      file: src/App.jsx
+      lines: [120, 187]
+  - id: "src/App.jsx:57-112"
+    drivers: [concern_split]
+    rationale: >
+      Pump scheduling, simulated moisture progression, and suppression of repeated triggers while
+      awaiting a live sensor recovery are owned by the root page rather than an irrigation controller.
+    source_slice:
+      file: src/App.jsx
+      lines: [57, 112]
